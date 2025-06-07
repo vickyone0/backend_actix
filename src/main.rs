@@ -1,23 +1,25 @@
-use actix_web::{guard,web, App, HttpResponse, HttpServer};
+use actix_web::{web, App, HttpResponse, HttpServer, get};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new().service(
-            web::resource("/path").route(
-                web::route()
-                    .guard(guard::Get())
-                    .guard(guard::Header("content-type", "text/plain"))
-                    .to(HttpResponse::Ok),
-            ),
-        )
+            web::scope("/users")
+                .service(show_users)
+                .service(user_detail),
+            )        
     })
     .bind(("127.0.0.1", 8080))?
     .run()
     .await
 }
 
+#[get("/show")]
+async fn show_users() -> HttpResponse {
+    HttpResponse::Ok().body("show users")
+}
 
-async fn index() -> HttpResponse {
-    HttpResponse::Ok().body("vignesh")
+#[get("/show/{id}")]
+async fn user_detail(path: web::Path<(u32,)>) -> HttpResponse {
+    HttpResponse::Ok().body(format!("User detail: {}", path.into_inner().0))
 }
