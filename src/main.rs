@@ -1,19 +1,17 @@
-use actix_web::{web, App, HttpResponse, HttpServer};
+use actix_web::{guard,web, App, HttpResponse};
 
+pub fn main() {
+    App::new()
+        .service(web::resource("/prefix").to(index))
+        .service(
+            web::resource("user/{name}")
+                .name("user_detail")
+                .guard(guard::Header("content-type", "application/json"))
+                .route(web::get().to(HttpResponse::Ok))
+                .route(web::put().to(HttpResponse::Ok))
+        );
+    }
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new()
-            .route("/", web::get().to(index))
-            .route("/usser", web::post().to(index))
-    })
-    .bind(("127.0.0.1", 8080))?
-    .run()
-    .await
-}
-
-
-async fn index() -> HttpResponse {
-    HttpResponse::Ok().body("vignesh")
-}
+    async fn index() -> HttpResponse {
+        HttpResponse::Ok().body("vignesh")
+    }
