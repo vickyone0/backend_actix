@@ -40,3 +40,5 @@ async fn upload_file(mut payload: Multipart) -> Result<HttpResponse> {
 
     Ok(HttpResponse::Ok().body("file uploaded"))
 }
+
+
