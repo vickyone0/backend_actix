@@ -53,3 +53,28 @@ async fn check_email_availability(
         Ok(())
     }
 }
+
+//Error Responses
+
+#[derive(Debug, Serialize)]
+struct ValidationErrorResponse {
+    field: String,
+    message: String,
+    error_code: String,
+}
+
+impl From<ValidationErrors> for HttpResponse {
+    fn from(errors : ValidationErrors) -> Self {
+        let formatted_errors: Vec<_> = errors
+            .field_errors()
+            .iter()
+            .map(|(field, err)| ValidationErrorResponse {
+                field: field.to_string(),
+                message: err[0].message.as_ref().unwrap().to_string(),
+                error_code: "VALIDATION_FAILED".into(),
+            })
+            .collect();
+
+        HttpResponse::UnprocessableEntity().json(formatted_errors)
+    }
+}
