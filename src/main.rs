@@ -1,25 +1,18 @@
-use actix_web::{web, App, HttpResponse, HttpServer, get};
+use actix_web::middleware::Logger;
+use env_logger::Env;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    use actix_web::{App, HttpServer};
+
+    env_logger::init_from_env(Env::default().default_filter_or("info"));
+
     HttpServer::new(|| {
-        App::new().service(
-            web::scope("/users")
-                .service(show_users)
-                .service(user_detail),
-            )        
+        App::new()
+            .wrap(Logger::default())
+            .wrap(Logger::new("%a %{User-Agent}i"))
     })
     .bind(("127.0.0.1", 8080))?
     .run()
     .await
-}
-
-#[get("/show")]
-async fn show_users() -> HttpResponse {
-    HttpResponse::Ok().body("show users")
-}
-
-#[get("/show/{id}")]
-async fn user_detail(path: web::Path<(u32,)>) -> HttpResponse {
-    HttpResponse::Ok().body(format!("User detail: {}", path.into_inner().0))
 }
