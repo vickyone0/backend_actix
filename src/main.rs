@@ -1,31 +1,33 @@
-use actix_web::middleware::{ErrorHandlerResponse, ErrorHandlers};
-use actix_web::{
-    dev,
-    http::{header, StatusCode},
-    web, App, HttpResponse, HttpServer, Result,
-};
-
-
-fn add_error_header<B>(mut res: dev::ServiceResponse<B>) -> Result<ErrorHandlerResponse<B>> {
-    res.response_mut().headers_mut().insert(
-        header::CONTENT_TYPE,
-        header::HeaderValue::from_static("Error"),
-    );
-
-    Ok(ErrorHandlerResponse::Response(res.map_into_left_body()))
-}
+use actix_web::{post,web, App, HttpResponse, HttpServer, Result, middleware::Logger};
+use serde::Deserialize;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    env_logger::init();
     HttpServer::new(|| {
         App::new()
-            .wrap(
-                ErrorHandlers::new()
-                    .handler(StatusCode::INTERNAL_SERVER_ERROR, add_error_header),
-            )
-            .service(web::resource("/").route(web::get().to(HttpResponse::InternalServerError)))
+            .wrap(Logger::default())
+            .route("/", web::get().to(index))
+            .service(submit)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
     .await
+}
+
+
+async fn index() -> HttpResponse {
+    HttpResponse::Ok().body("vignesh")
+}
+
+#[derive(Deserialize)]
+struct Info {
+    username: String,
+}
+
+
+#[post("/submit")]
+async fn submit(info: web::Json<Info>) -> Result<String> {
+    Ok(format!("Welcome {}!", info.username))
+
 }
