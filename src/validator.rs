@@ -78,3 +78,13 @@ impl From<ValidationErrors> for HttpResponse {
         HttpResponse::UnprocessableEntity().json(formatted_errors)
     }
 }
+
+
+//
+
+async fn index() -> HttpResponse {
+    HttpResponse::Ok()
+        .insert_header(ContentEncoding::Identity)
+        .body("data")
+}
+
