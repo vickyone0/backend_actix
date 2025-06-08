@@ -1,7 +1,38 @@
-use actix_web::{post, web, App, HttpServer, Responder};
+use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
 use actix_multipart::form::{tempfile::TempFile, MultipartForm};
 use serde::Deserialize;
-use std::fs;
+use std::fs::{self, OpenOptions};
+use std::io::Write;
+
+
+#[derive(serde::Deserialize)]
+pub struct ChunkInfo {
+    file_id: String,
+    chunk_number: u32,
+    total_chunks: u32,
+}
+
+pub async fn upload_chunk(
+    info:web::Query<ChunkInfo>,
+    body: web::Bytes,
+) -> impl Responder{
+    let dir = "./uploads/chunks";
+    fs::create_dir_all(dir).ok();
+
+    let chunk_path = format!("{}/{}_{}", dir, info.file_id, info.chunk_number);
+    let mut file = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .open(&chunk_path)
+        .expect("Failed to open chunk file");
+
+    file.write_all(&body).expect("Failed to write chunk");
+
+    HttpResponse::Ok().body(format!(
+        "Received chunk {} of {} for file {}",
+        info.chunk_number, info.total_chunks, info.file_id
+    ))
+}
 
 #[derive(Debug, Deserialize)]
 struct Metadata {

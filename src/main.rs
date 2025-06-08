@@ -1,5 +1,6 @@
 use actix_web::{web, App, HttpResponse, HttpServer, Result, middleware::Logger};
 use actix_multipart::Multipart;
+use backend_actix::filesave::upload_chunk;
 use futures_util::StreamExt as _;
 use std::io::Write;
 use sanitize_filename::sanitize;
@@ -18,6 +19,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::new("%a %{User-Agent}i"))
             .route("/", web::get().to(index))
             .route("/upload", web::post().to(upload_file))
+            .route("/upload_chunk", web::post().to(upload_chunk))
 
     })
     .bind(("127.0.0.1", 8080))?
