@@ -3,13 +3,19 @@ use actix_multipart::Multipart;
 use futures_util::StreamExt as _;
 use std::io::Write;
 use sanitize_filename::sanitize;
+use env_logger::Env;
+
+mod filesave;
+
+use crate::filesave::upload_file;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    env_logger::init();
+    env_logger::init_from_env(Env::default().default_filter_or("info"));
     HttpServer::new(|| {
         App::new()
             .wrap(Logger::default())
+            .wrap(Logger::new("%a %{User-Agent}i"))
             .route("/", web::get().to(index))
             .route("/upload", web::post().to(upload_file))
 
@@ -23,22 +29,22 @@ async fn index() -> HttpResponse {
     HttpResponse::Ok().body("vignesh")
 }
 
-async fn upload_file(mut payload: Multipart) -> Result<HttpResponse> {
-    while let Some(item) = payload.next().await {
-        let mut field = item?;
-        let content_disposition = field.content_disposition();
-        let filename = content_disposition.get_filename().unwrap_or("upload.bin");
-        let filepath = format!("./uploads/{}",sanitize(&filename));
-        let mut f = std::fs::File::create(filepath)?;
+// async fn upload_file(mut payload: Multipart) -> Result<HttpResponse> {
+//     while let Some(item) = payload.next().await {
+//         let mut field = item?;
+//         let content_disposition = field.content_disposition();
+//         let filename = content_disposition.get_filename().unwrap_or("upload.bin");
+//         let filepath = format!("./uploads/{}",sanitize(&filename));
+//         let mut f = std::fs::File::create(filepath)?;
 
-        while let Some(chunk) = field.next().await {
-            let data = chunk?;
-            f.write_all(&data)?;
+//         while let Some(chunk) = field.next().await {
+//             let data = chunk?;
+//             f.write_all(&data)?;
             
-        }
-    }
+//         }
+//     }
 
-    Ok(HttpResponse::Ok().body("file uploaded"))
-}
+//     Ok(HttpResponse::Ok().body("file uploaded"))
+// }
 
 

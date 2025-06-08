@@ -10,4 +10,4 @@ serde ={ version = "1", features = ["derive"]}
 actix-multipart = "0.6"
 futures-util = "0.3"
 sanitize-filename = "0.5"
-validator = { version = "2", features = ["derive"] }
+validator = "0.20.0"
