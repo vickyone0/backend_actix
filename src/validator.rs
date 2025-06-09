@@ -1,6 +1,5 @@
 //use validator::Validate;
 
-
 // struct SignupForm{
 //     #[validate(email(message = "Invalid email format"))]
 //     email: String,
@@ -15,7 +14,6 @@
 //     #[validate(custom = "validate_age")]
 //     age: u8
 // }
-
 
 // fn validate_age(age: &u8) -> Result<(),validator::ValidationError> {
 //     if *age >= 13 {
@@ -33,7 +31,6 @@
 //     #[validate(custom(function = "check_email_availability", use_context))]
 //     email: String,
 // }
-
 
 // async fn check_email_availability(
 //     email: &str,
@@ -79,7 +76,6 @@
 //     }
 // }
 
-
 //
 
 // async fn index() -> HttpResponse {
@@ -87,4 +83,3 @@
 //         .insert_header(ContentEncoding::Identity)
 //         .body("data")
 // }
-

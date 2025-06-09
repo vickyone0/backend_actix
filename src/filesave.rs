@@ -1,9 +1,8 @@
-use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
 use actix_multipart::form::{tempfile::TempFile, MultipartForm};
+use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
 use serde::Deserialize;
 use std::fs::{self, OpenOptions};
 use std::io::Write;
-
 
 #[derive(serde::Deserialize)]
 pub struct ChunkInfo {
@@ -12,10 +11,7 @@ pub struct ChunkInfo {
     total_chunks: u32,
 }
 
-pub async fn upload_chunk(
-    info:web::Query<ChunkInfo>,
-    body: web::Bytes,
-) -> impl Responder{
+pub async fn upload_chunk(info: web::Query<ChunkInfo>, body: web::Bytes) -> impl Responder {
     let dir = "./uploads/chunks";
     fs::create_dir_all(dir).ok();
 
@@ -47,10 +43,8 @@ pub struct UploadForm {
 }
 
 pub async fn upload_file(MultipartForm(form): MultipartForm<UploadForm>) -> impl Responder {
-    
     let file_path = form.file.file.path();
     let file_bytes = fs::read(file_path).expect("Failed to read uploaded file");
-
 
     format!(
         "Uploaded file for {}, size: {} bytes, first 10 bytes: {:?}",
