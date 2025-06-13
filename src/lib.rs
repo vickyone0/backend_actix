@@ -5,3 +5,4 @@ pub mod validator;
 pub mod models;
 pub mod repository;
 pub mod jwttoken;
+pub mod passwordhash;
