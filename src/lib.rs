@@ -6,3 +6,4 @@ pub mod models;
 pub mod repository;
 pub mod jwttoken;
 pub mod passwordhash;
+pub mod sectionmanagement;

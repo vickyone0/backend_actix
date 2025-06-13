@@ -19,3 +19,5 @@ jsonwebtoken = "9.3"
 chrono = "0.4.41"
 argon2 = { version = "0.5", features = ["std"]} # Password hashing
 rand_core = "0.6"
+redis = { version = "0.23", features = ["tokio-comp"] }
+bb8 = "0.8"
