@@ -12,9 +12,19 @@ mod filesave;
 use crate::filesave::upload_file;
 use backend_actix::deadpoolc;
 use backend_actix::sqlxc;
+use backend_actix::jwttoken;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+
+
+
+
+let secret = "feke8304347niu83u4934";
+let config = jwtConfig::new(secret);
+let claims = Claims::new("user123".into(), "admin".into(), 24);
+let token = generate_token(&claims, &config)?;
+
     env_logger::init_from_env(Env::default().default_filter_or("info"));
 
     // let pool = sqlxc::create_pool(&std::env::var("DATABASE_URL").unwrap())
@@ -35,6 +45,7 @@ async fn main() -> std::io::Result<()> {
     .bind(("127.0.0.1", 8080))?
     .run()
     .await
+
 }
 
 async fn index() -> HttpResponse {
